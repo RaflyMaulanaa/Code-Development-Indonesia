@@ -1,9 +1,11 @@
 package com.example.codeidapp.presentation
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.example.codeidapp.MainActivity
 import com.example.codeidapp.databinding.ActivityLoginBinding
 import com.example.codeidapp.viewmodel.LoginViewModel
 import com.example.codeidapp.viewmodel.ViewModelFactory
@@ -21,7 +23,9 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel.preffiledAccount("Rafly", "123456")
+        if (viewModel.getUser() == null) {
+            viewModel.preffiledAccount("Rafly", "123456")
+        }
 
         binding.btnLogin.setOnClickListener {
             doLogin()
@@ -38,9 +42,15 @@ class LoginActivity : AppCompatActivity() {
 
         if (result) {
             Toast.makeText(this, "Benar", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
         } else {
             Toast.makeText(this, "Salah", Toast.LENGTH_SHORT).show()
         }
 
     }
+
+
+
 }

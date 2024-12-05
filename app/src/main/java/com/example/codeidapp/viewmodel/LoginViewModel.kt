@@ -2,6 +2,7 @@ package com.example.codeidapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.example.codeidapp.data.WeatherRepository
+import com.example.codeidapp.data.source.local.model.User
 
 class LoginViewModel(
     private val weatherRepository: WeatherRepository
@@ -16,7 +17,10 @@ class LoginViewModel(
     }
 
 //    fun saveUser(user: User): Boolean { }
-//    fun getUser(): User? { }
+
+    fun getUser(): User? {
+        return weatherRepository.getUser()
+    }
 
 
 }
