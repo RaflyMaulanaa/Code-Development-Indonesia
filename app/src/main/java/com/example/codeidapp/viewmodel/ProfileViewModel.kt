@@ -1,5 +1,4 @@
 package com.example.codeidapp.viewmodel
-
 import androidx.lifecycle.ViewModel
 import com.example.codeidapp.data.WeatherRepository
 
