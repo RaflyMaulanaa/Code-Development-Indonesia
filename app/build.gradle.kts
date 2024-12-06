@@ -21,11 +21,17 @@ android {
 
     buildTypes {
         release {
+            buildConfigField("String", "OPEN_WEATHER_API_KEY", "\"585094e691dd0ede466b8fc9db1d973f\"")
+
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+
+        debug {
+            buildConfigField("String", "OPEN_WEATHER_API_KEY", "\"585094e691dd0ede466b8fc9db1d973f\"")
         }
     }
     compileOptions {
@@ -37,6 +43,7 @@ android {
     }
 
     buildFeatures {
+        buildConfig = true
         viewBinding = true
         dataBinding = true
     }

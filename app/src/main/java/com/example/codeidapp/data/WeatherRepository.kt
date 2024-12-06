@@ -4,6 +4,7 @@ import com.example.codeidapp.data.source.local.preferences.UserPreferenceManager
 import com.example.codeidapp.data.source.local.room.WeatherDao
 import com.example.codeidapp.data.source.remote.network.ApiService
 import com.example.codeidapp.data.source.local.model.User
+import com.example.codeidapp.data.source.remote.response.WeatherResponse
 
 class WeatherRepository constructor(
     private val apiService: ApiService,
@@ -23,12 +24,17 @@ class WeatherRepository constructor(
         return preferenceManager.saveUser(newUsername, newPassword)
     }
 
-//    fun saveUser(user: User): Boolean {
-//        return preferenceManager.saveUser(user)
-//    }
-
     fun getUser(): User? {
         return preferenceManager.getUser()
+    }
+
+    suspend fun getWeather(city: String, appId: String): Result<WeatherResponse> {
+        return try {
+            val response = apiService.getWeather(city = city, appId = appId)
+            Result.Success(response)
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "Terjadi kesalahan")
+        }
     }
 
     companion object {

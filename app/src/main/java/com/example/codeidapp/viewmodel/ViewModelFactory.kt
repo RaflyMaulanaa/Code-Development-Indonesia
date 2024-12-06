@@ -16,6 +16,9 @@ class ViewModelFactory private constructor(private val weatherRepository: Weathe
         if (modelClass.isAssignableFrom(ProfileViewModel::class.java)) {
             return ProfileViewModel(weatherRepository) as T
         }
+        if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
+            return HomeViewModel(weatherRepository) as T
+        }
 
         throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
     }
