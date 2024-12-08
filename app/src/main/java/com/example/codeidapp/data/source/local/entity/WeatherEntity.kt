@@ -14,4 +14,7 @@ data class WeatherEntity(
     @field:PrimaryKey
     val id: Int,
 
+    @field:ColumnInfo(name = "city_name")
+    val cityName: String, // Misalnya Nama
+
 ) : Parcelable

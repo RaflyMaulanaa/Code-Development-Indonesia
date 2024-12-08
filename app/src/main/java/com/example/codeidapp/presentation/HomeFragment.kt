@@ -41,18 +41,24 @@ class HomeFragment : Fragment() {
 
         startListeningToLocation()
 
-        setupObserver ()
+        setupObserver()
 
         return binding.root
     }
 
     private fun startListeningToLocation() {
         if (locationManager.hasLocationPermission()) {
-            viewLifecycleOwner.lifecycleScope.launch{
+            viewLifecycleOwner.lifecycleScope.launch {
                 try {
                     locationManager.listenToLocation().collectLatest { location ->
-                        viewModel.getWeather(location.latitude.toString(), location.longitude.toString())
-                        Log.d("LocationFragment", "Received Location: Lat=${location.latitude}, Lng=${location.longitude}")
+                        viewModel.getWeather(
+                            location.latitude.toString(),
+                            location.longitude.toString()
+                        )
+                        Log.d(
+                            "LocationFragment",
+                            "data Location: Lat=${location.latitude}, Lng=${location.longitude}"
+                        )
                     }
                 } catch (e: Exception) {
                     Log.e("LocationFragment", "Error: ${e.message}")
@@ -63,32 +69,43 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun setupObserver (){
-        viewModel.weatherData.observe(viewLifecycleOwner) { result ->
-            when (result) {
-                is Result.Loading -> {
-                    Toast.makeText(context, "Memuat data cuaca bosku", Toast.LENGTH_SHORT).show()
-                }
-                is Result.Success -> {
-                    val data = result.data
-                    val conditionIcon = viewModel.getWeatherIcon(data.weather[0].description)
-                    binding.conditionIv.setImageResource(conditionIcon)
 
-                    binding.nameTv.text = data.name
-                    binding.tempTv.text = "${data.main.temp}°C"
-                    binding.minTempTv.text = "${data.main.temp_min}°C"
-                    binding.maxTempTv.text = "${data.main.temp_max}°C"
-                    binding.pressureTv.text = "${data.main.pressure} hPa"
-                    binding.humidityTv.text = "${data.main.humidity}%"
-                    binding.windTv.text = "${data.wind.speed} m/s"
-                    binding.conditionDescTv.text = data.weather[0].description.capitalize()
-                    binding.updatedAtTv.text = "Diperbarui pada: ${data.dt}"
+    private fun setupObserver() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                viewModel.weatherData.collect { result ->
+                    Log.d("HomeFragment", "Mengumpulkan hasil data cuaca: $result")
+                    when (result) {
+                        is Result.Loading -> {
+                            Toast.makeText(context, "Memuat data cuaca bosku", Toast.LENGTH_SHORT).show()
+                        }
+
+                        is Result.Success -> {
+                            val data = result.data
+                            val conditionIcon = viewModel.getWeatherIcon(data.weather[0].description)
+                            binding.conditionIv.setImageResource(conditionIcon)
+
+                            binding.nameTv.text = data.name
+                            binding.tempTv.text = "${data.main.temp}°C"
+                            binding.minTempTv.text = "${data.main.temp_min}°C"
+                            binding.maxTempTv.text = "${data.main.temp_max}°C"
+                            binding.pressureTv.text = "${data.main.pressure} hPa"
+                            binding.humidityTv.text = "${data.main.humidity}%"
+                            binding.windTv.text = "${data.wind.speed} m/s"
+                            binding.conditionDescTv.text = data.weather[0].description.capitalize()
+                            binding.updatedAtTv.text = "Diperbarui pada: ${data.dt}"
+                        }
+
+                        is Result.Error -> {
+                            Toast.makeText(context, "Error: ${result.error}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 }
-                is Result.Error -> {
-                    Toast.makeText(context, "Error: ${result.error}", Toast.LENGTH_SHORT).show()
-                }
+            } catch (e: Exception) {
+                // Tangani error jika terjadi
+                Log.e("HomeFragment", "Error during weather data collection: ${e.message}")
+                Toast.makeText(context, "Terjadi kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
             }
-
         }
     }
 

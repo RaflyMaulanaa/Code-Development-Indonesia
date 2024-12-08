@@ -1,10 +1,16 @@
 package com.example.codeidapp.data
 
+import android.util.Log
+import com.example.codeidapp.data.source.local.entity.WeatherEntity
 import com.example.codeidapp.data.source.local.preferences.UserPreferenceManager
 import com.example.codeidapp.data.source.local.room.WeatherDao
 import com.example.codeidapp.data.source.remote.network.ApiService
 import com.example.codeidapp.data.source.local.model.User
 import com.example.codeidapp.data.source.remote.response.WeatherResponse
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onStart
 
 class WeatherRepository constructor(
     private val apiService: ApiService,
@@ -27,13 +33,43 @@ class WeatherRepository constructor(
     fun getUser(): User? {
         return preferenceManager.getUser()
     }
-    suspend fun getWeather(latitude: String, longitude: String, appId: String): Result<WeatherResponse> {
-        return try {
-            val response = apiService.getWeather(latitude = latitude, longitude = longitude, appId = appId)
-            Result.Success(response)
+
+    fun getWeatherDataAndSaveCity(
+        latitude: String,
+        longitude: String,
+        appId: String
+    ): Flow<Result<WeatherResponse>> = flow {
+        emit(Result.Loading)
+        try {
+            val response =
+                apiService.getWeather(latitude = latitude, longitude = longitude, appId = appId)
+
+            saveCityNameToLocal(response)
+
+            emit(Result.Success(response))
+
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Terjadi kesalahan")
+            Log.e("WeatherRepository", "Error mengambil data cuaca: ${e.message}")
+            emit(Result.Error(e.message ?: "Terjadi kesalahan"))
         }
+    }.onStart {
+        // Optionally, perform actions when the flow starts (already covered with emit(Result.Loading))
+    }.catch { e ->
+        emit(Result.Error(e.message ?: "Terjadi kesalahan"))
+    }
+
+    private suspend fun saveCityNameToLocal(response: WeatherResponse) {
+        try {
+            val weatherEntity = WeatherEntity(
+                id = response.id,
+                cityName = response.name
+            )
+            // Save city name into the local database
+            userDao.insertCity(weatherEntity)
+        } catch (e: Exception) {
+            Log.d("weatherData", "data: ${e.message.toString()} ")
+        }
+
     }
 
     companion object {

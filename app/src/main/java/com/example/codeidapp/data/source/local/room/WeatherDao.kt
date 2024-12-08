@@ -1,6 +1,5 @@
 package com.example.codeidapp.data.source.local.room
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -10,10 +9,13 @@ import com.example.codeidapp.data.source.local.entity.WeatherEntity
 @Dao
 interface WeatherDao {
 
-    @Query("SELECT * FROM weather_data ORDER BY id ASC")
-    fun getUser(): LiveData<List<WeatherEntity>>
+//    @Insert(onConflict = OnConflictStrategy.IGNORE)
+//    suspend fun insertUser(user: List<WeatherEntity>)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertUser(user: List<WeatherEntity>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCity(weather: WeatherEntity)
+
+    @Query("SELECT * FROM weather_data WHERE id = :id")
+    suspend fun getWeatherById(id: Int): WeatherEntity?
 
 }
