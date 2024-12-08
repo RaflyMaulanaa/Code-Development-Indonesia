@@ -18,10 +18,10 @@ class HomeViewModel(
     private val _weatherData = MutableLiveData<Result<WeatherResponse>>()
     val weatherData: LiveData<Result<WeatherResponse>> = _weatherData
 
-    fun getWeather(city: String) {
+    fun getWeather(latitude: String, longitude: String) {
         _weatherData.value = Result.Loading
         viewModelScope.launch {
-            val result = weatherRepository.getWeather(city,BuildConfig.OPEN_WEATHER_API_KEY)
+            val result = weatherRepository.getWeather(latitude,longitude,BuildConfig.OPEN_WEATHER_API_KEY)
             _weatherData.value = result
         }
     }

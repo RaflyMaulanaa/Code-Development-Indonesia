@@ -1,18 +1,26 @@
 package com.example.codeidapp.presentation
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.codeidapp.databinding.FragmentHomeBinding
 import com.example.codeidapp.viewmodel.HomeViewModel
 import com.example.codeidapp.data.Result
+import com.example.codeidapp.data.location.LocationManagerImpl
 import com.example.codeidapp.viewmodel.ViewModelFactory
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
+
+    private lateinit var locationManager: LocationManagerImpl
+
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
@@ -29,18 +37,30 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
+        locationManager = LocationManagerImpl(requireContext())
+
+        startListeningToLocation()
+
         setupObserver ()
 
-        binding.searchBarIv.setOnClickListener {
-            val cityName = binding.cityEt.text.toString().trim()
-            if (cityName.isNotEmpty()) {
-                viewModel.getWeather(cityName)
-            } else {
-                Toast.makeText(context, "Masukkan nama kota terlebih dahulu Bosku", Toast.LENGTH_SHORT).show()
-            }
-        }
-
         return binding.root
+    }
+
+    private fun startListeningToLocation() {
+        if (locationManager.hasLocationPermission()) {
+            viewLifecycleOwner.lifecycleScope.launch{
+                try {
+                    locationManager.listenToLocation().collectLatest { location ->
+                        viewModel.getWeather(location.latitude.toString(), location.longitude.toString())
+                        Log.d("LocationFragment", "Received Location: Lat=${location.latitude}, Lng=${location.longitude}")
+                    }
+                } catch (e: Exception) {
+                    Log.e("LocationFragment", "Error: ${e.message}")
+                }
+            }
+        } else {
+            Log.e("LocationFragment", "Location permission is not granted!")
+        }
     }
 
     private fun setupObserver (){

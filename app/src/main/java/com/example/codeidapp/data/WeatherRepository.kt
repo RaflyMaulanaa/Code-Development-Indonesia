@@ -27,10 +27,9 @@ class WeatherRepository constructor(
     fun getUser(): User? {
         return preferenceManager.getUser()
     }
-
-    suspend fun getWeather(city: String, appId: String): Result<WeatherResponse> {
+    suspend fun getWeather(latitude: String, longitude: String, appId: String): Result<WeatherResponse> {
         return try {
-            val response = apiService.getWeather(city = city, appId = appId)
+            val response = apiService.getWeather(latitude = latitude, longitude = longitude, appId = appId)
             Result.Success(response)
         } catch (e: Exception) {
             Result.Error(e.message ?: "Terjadi kesalahan")

@@ -69,4 +69,5 @@ dependencies {
     implementation(libs.androidx.work.runtime)
     implementation(libs.symbol.processing.api.v1901013)
     ksp(libs.androidx.room.compiler)
+    implementation(libs.play.services.location)
 }

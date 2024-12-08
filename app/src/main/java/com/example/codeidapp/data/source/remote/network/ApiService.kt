@@ -8,7 +8,8 @@ interface ApiService {
 
     @GET("weather")
     suspend fun getWeather(
-        @Query("q") city: String,
+        @Query("lat") latitude: String,
+        @Query("lon") longitude: String,
         @Query("units") units: String = "metric",
         @Query("lang") lang: String = "id",
         @Query("appid") appId: String
