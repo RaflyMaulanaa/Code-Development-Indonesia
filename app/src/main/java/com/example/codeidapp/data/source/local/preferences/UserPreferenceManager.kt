@@ -5,30 +5,21 @@ import com.example.codeidapp.data.source.local.model.User
 
 class UserPreferenceManager (context: Context) {
 
-    private val preferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+    private val dbHelper = UserDatabaseHelper(context)
 
-    fun saveUser(username: String, password: String) : Boolean {
-        preferences.edit()
-            .putString("username", username)
-            .putString("password", password)
-            .apply()
-        return true
-    }
-
-    fun getUser(): User? {
-        val username = preferences.getString("username", null)
-        val password = preferences.getString("password", null)
-        return if (username != null && password != null) {
-            User(username, password)
-        } else {
-            null
-        }
+    fun saveUser(username: String, password: String): Long {
+        return dbHelper.addUser(username, password)
     }
 
     fun login(username: String, password: String): Boolean {
-        val savedUser = getUser()
-        return savedUser?.let {
-            it.username == username && it.password == password
-        } ?: false
+        return dbHelper.checkLogin(username, password)
+    }
+
+    fun updateUser(username: String, newUsername: String, newPassword: String): Boolean {
+        return dbHelper.updateUser(username, newUsername, newPassword)
+    }
+
+    fun getUser(): User? {
+        return dbHelper.getUser()
     }
 }

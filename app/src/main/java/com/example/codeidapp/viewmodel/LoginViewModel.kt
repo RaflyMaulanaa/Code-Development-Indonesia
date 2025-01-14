@@ -18,6 +18,10 @@ class LoginViewModel(
 
 //    fun saveUser(user: User): Boolean { }
 
+    fun saveUser(username: String, password: String): Long {
+        return weatherRepository.saveUser(username, password)
+    }
+
     fun getUser(): User? {
         return weatherRepository.getUser()
     }

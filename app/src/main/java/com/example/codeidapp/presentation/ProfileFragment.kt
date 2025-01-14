@@ -34,7 +34,6 @@ class ProfileFragment : Fragment() {
     }
 
     private fun doUpdate() {
-
         val result = viewModel.updateProfile(
             binding.etUsername.text.toString(),
             binding.etPassword.text.toString()

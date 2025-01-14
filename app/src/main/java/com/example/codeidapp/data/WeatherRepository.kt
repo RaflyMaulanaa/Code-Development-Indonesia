@@ -26,7 +26,11 @@ class WeatherRepository constructor(
         preferenceManager.saveUser(username, password)
     }
 
-    fun saveUser(newUsername: String, newPassword: String): Boolean {
+    fun updateUser(username: String, newUsername: String, newPassword: String): Boolean {
+        return preferenceManager.updateUser(username, newUsername, newPassword)
+    }
+
+    fun saveUser(newUsername: String, newPassword: String): Long {
         return preferenceManager.saveUser(newUsername, newPassword)
     }
 

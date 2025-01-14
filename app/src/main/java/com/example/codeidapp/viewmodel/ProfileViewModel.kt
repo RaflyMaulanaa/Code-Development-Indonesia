@@ -7,7 +7,13 @@ class ProfileViewModel(
 ) : ViewModel() {
 
     fun updateProfile(newUsername: String, newPassword: String): Boolean {
-        return weatherRepository.saveUser(newUsername, newPassword)
+        val user = weatherRepository.getUser()
+        return if (user != null) {
+            // Memperbarui profil jika pengguna terdaftar
+            weatherRepository.updateUser(user.username, newUsername, newPassword)
+        } else {
+            false
+        }
     }
 
 }

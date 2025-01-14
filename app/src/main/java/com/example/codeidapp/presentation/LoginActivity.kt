@@ -2,6 +2,7 @@ package com.example.codeidapp.presentation
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -23,10 +24,6 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (viewModel.getUser() == null) {
-            viewModel.preffiledAccount("Rafly", "123456")
-        }
-
         binding.btnLogin.setOnClickListener {
             doLogin()
         }
@@ -35,20 +32,36 @@ class LoginActivity : AppCompatActivity() {
 
     private fun doLogin() {
 
+        val username = binding.etUsername.text.toString()
+        val password = binding.etPassword.text.toString()
+
         val result = viewModel.login(
             binding.etUsername.text.toString(),
             binding.etPassword.text.toString()
         )
 
         if (result) {
-            Toast.makeText(this, "Benar", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Login Berhasil", Toast.LENGTH_SHORT).show()
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
         } else {
-            Toast.makeText(this, "Salah", Toast.LENGTH_SHORT).show()
+            val id = saveNewUser(username, password)
+            Log.d("SaveUser", "User ID: $id")
         }
 
+    }
+
+    private fun saveNewUser(username: String, password: String) {
+        val id = viewModel.saveUser(username, password)
+        if (id != -1L) {
+            Toast.makeText(this, "Akun Baru Terdaftar!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        } else {
+            Toast.makeText(this, "Gagal menyimpan akun", Toast.LENGTH_SHORT).show()
+        }
     }
 
 }

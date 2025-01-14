@@ -18,7 +18,7 @@ abstract class WeatherDatabase : RoomDatabase() {
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
                     context.applicationContext,
-                    WeatherDatabase::class.java, "user.db"
+                    WeatherDatabase::class.java, "dataWeather.db"
                 ).build()
             }
     }
